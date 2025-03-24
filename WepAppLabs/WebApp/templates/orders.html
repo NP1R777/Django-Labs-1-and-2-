@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Список заказов{% endblock %}
+
+{% block content %}
+    {% for order in data %}
+        {% include 'order_element.html' with element=order %}
+    {% empty %}
+        <li>Список пуст</li>
+    {% endfor %}
+{% endblock %}
