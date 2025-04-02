@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Заказ №{{ order.id }}{% endblock %}
+
+{% block content %}
+    {% for order in data %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/order.css' %}">
+        <div class="order">
+            <div class="order-text">Информация о товаре</div>
+            <div class="image-order">
+                <img class="image-order-page" src="{{ order.pictures_url }}">
+            </div>
+            <form action="{% url 'order_ok' order.id %}" method="post" class="form-action" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- <label for="text-input">Введите количество</label> -->
+                <input class="text-input" name="text" type="text"><br>
+                <input class="input-field" type="submit" value="Заказать">
+            </form>
+        </div>
+        
+        <div class="order-info">
+            <ul class="list-info">
+                <li>Название: {{ order.name }}</li>
+                <li>Описание: {{ order.description }}</li>
+                <li>Страна производства: {{ order.country }}</li>
+                <li>Цена: {{ order.price }} руб.</li>
+            </ul>
+        </div>
+    {% endfor %}
+{% endblock %}

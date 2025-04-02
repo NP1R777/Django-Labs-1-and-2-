@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Привет!</title>
+</head>
+<body>
+    <h1>Привет, Мир!</h1>
+    <h2>Сегодняшняя дата: {{ current_date }}</h2>
+    <ul>
+        {% for var in data.list %}
+            {% if var == 'python' %}
+                <li><h3>We like {{ var }}</h3></li>
+            {% elif var == 'django' %}
+                <li><h3>We like django a lot!</h3></li>
+            {% else %}
+                <li><h3>We don't like html</h3></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>
