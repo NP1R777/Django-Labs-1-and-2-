@@ -43,7 +43,7 @@ const ProductPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8000/products/${pk}/`);
+        const response = await fetch(`http://localhost:8001/products/${pk}/`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -82,7 +82,7 @@ const ProductPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/application/', {
+      const response = await fetch('http://localhost:8001/application/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

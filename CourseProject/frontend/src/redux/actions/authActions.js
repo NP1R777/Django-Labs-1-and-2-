@@ -11,7 +11,7 @@ export const login = (credentials) => async (dispatch) => {
       throw new Error('Ошибка аутентификации. Пожалуйста, обновите страницу.');
     }
 
-    const response = await fetch('http://localhost:8000/login/', {
+    const response = await fetch('http://localhost:8001/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

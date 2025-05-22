@@ -15,7 +15,7 @@ const OrderForm = () => {
     const fetchOrders = async () => {
       try {
         const pk = localStorage.getItem('pk');
-        const response = await axios.get('http://localhost:8000/application/', {
+        const response = await axios.get('http://localhost:8001/application/', {
           params: {
             pk: pk
           },
