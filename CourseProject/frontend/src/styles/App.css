@@ -1,0 +1,189 @@
+/* Общие стили */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.container {
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Стили для header */
+header {
+  background-color: #007BFF;
+  color: white;
+  padding: 20px 0;
+}
+
+header .logo h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+header nav ul li {
+  margin-left: 20px;
+}
+
+header nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+header nav ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Стили для main */
+main {
+  background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px 0;
+  margin-bottom: 0;
+}
+
+.product-card {
+  width: 300px;
+  height: 500px;
+  margin: 20px 10px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}
+
+.product-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.product-details {
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-description {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: auto;
+}
+
+.product-price {
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.add-to-cart {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: auto;
+  width: 100%;
+}
+
+.add-to-cart:hover {
+  background-color: #0056b3;
+}
+
+#sortButtons {
+  width: 400px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.sort_up, .sort_down {
+  margin: 0 5px;
+}
+
+
+/* Стили для footer */
+footer {
+  background-color: #0056b3;
+  color: white;
+  padding: 20px 0;
+  margin-top: 0px;
+  flex-shrink: 0;
+}
+
+footer p {
+  margin: 0;
+  font-size: 16px;
+}
+
+footer nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+footer nav ul li {
+  margin-left: 20px;
+}
+
+footer nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+footer nav ul li a:hover {
+  text-decoration: underline;
+}
