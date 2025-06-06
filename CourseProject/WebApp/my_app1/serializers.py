@@ -19,10 +19,16 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    is_active = serializers.BooleanField(default=False, required=False)
+    is_progress = serializers.BooleanField(default=False, required=False)
+    is_close = serializers.BooleanField(default=False, required=False)
+    is_draft = serializers.BooleanField(default=False, required=False)
+    is_reject = serializers.BooleanField(default=False, required=False)
+
     class Meta:
         model = Application
         fields = ["pk", "created_at", "deleted_at", "is_active", "is_progress",
-                  "is_close", "is_draft", "is_reject", "quantity_product", "id_product"]
+                  "is_close", "is_draft", "is_reject", "id_product", "quantity_product"]
 
 
 class FullStockSerializer(serializers.ModelSerializer):
@@ -36,9 +42,9 @@ class FullStockSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    is_staff = serializers.BooleanField(default=False, required=False)
     is_superuser = serializers.BooleanField(default=False, required=False)
 
     class Meta:
         model = CustomUser
-        fields = ['pk', 'email', 'password', 'is_staff', 'is_superuser']
+        fields = ['pk', 'email', 'password', 'is_superuser',
+                  "created_at", "deleted_at", "updated_at"]

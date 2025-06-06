@@ -11,7 +11,7 @@ export const login = (credentials) => async (dispatch) => {
       throw new Error('Ошибка аутентификации. Пожалуйста, обновите страницу.');
     }
 
-    const response = await fetch('http://localhost:8001/login/', {
+    const response = await fetch('http://localhost:8002/login/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -27,6 +27,7 @@ export const login = (credentials) => async (dispatch) => {
     if (response.ok) {
       localStorage.clear();
       localStorage.setItem('pk', data.pk[0].id);
+      localStorage.setItem('is_superuser', data.is_superuser[0].is_superuser);
 
       dispatch(loginSuccess({
         user: data.email,

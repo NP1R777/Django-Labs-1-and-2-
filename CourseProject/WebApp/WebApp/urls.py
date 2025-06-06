@@ -50,5 +50,9 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('application/', views.ApplicationList.as_view(), name='application_list')
+    path('application/', views.ApplicationList.as_view(), name='application_list'),
+    path('application/<int:pk>/', views.ApplicationDetail.as_view(), name='application-detail'),
+    path('admin-panel/', views.AdminPanelProducts.as_view(), name='admin-panel'),
+    path('user-list/', views.UsersList.as_view(), name='user-list'),
+    path('user-detail/<int:pk>/', views.UserDetail.as_view(), name='user-detail')
 ]

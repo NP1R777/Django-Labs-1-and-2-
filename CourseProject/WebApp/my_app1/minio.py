@@ -34,3 +34,15 @@ def add_pic(new_product, pic):
     new_product.save()
 
     return Response({"message": "success"})
+
+
+
+
+
+
+# class Images{
+#     private string url;
+#     string ImageName {get; set;}
+#     string ImgaeURL {get => url;
+#                      set => $"addr{}" }
+# }

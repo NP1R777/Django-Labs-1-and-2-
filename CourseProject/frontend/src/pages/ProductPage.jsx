@@ -2,6 +2,7 @@ import '../styles/order.css';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import React, { useState, useEffect } from 'react';
+import ErrorBasket from '../components/ErrorBasket.jsx'
 import { useParams, useNavigate } from 'react-router-dom';
 
 const ProductPage = () => {
@@ -43,7 +44,7 @@ const ProductPage = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8001/products/${pk}/`);
+        const response = await fetch(`http://localhost:8002/products/${pk}/`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -72,17 +73,18 @@ const ProductPage = () => {
 
     const pk_user = localStorage.getItem('pk');
     const applicationData = {
-      product: product.pk,
-      quantity: quantity,
-      status: 'is_active',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      deleted_at: null,
+      id_product: product.pk,
+      quantity_product: quantity,
+      is_active: true,
+      is_progress: false,
+      is_close: false,
+      is_draft: false,
+      is_reject: false,
       pk_user: pk_user
     };
 
     try {
-      const response = await fetch('http://localhost:8001/application/', {
+      const response = await fetch('http://localhost:8002/application/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,12 +98,13 @@ const ProductPage = () => {
 
       const result = await response.json();
       console.log('Заявка создана успешно:', result);
+      console.log(applicationData);
       alert('Ваш заказ принят!');
       navigate('/');
     } catch (err) {
       console.error('Ошибка при создании заявки:', err);
       setError(err.message);
-      alert('Произошла ошибка при создании заявки.');
+      // alert('Произошла ошибка при создании заявки.');
     }
   };
 
@@ -116,11 +119,7 @@ const ProductPage = () => {
 
   if (error) {
     return (
-      <div className="error-container">
-        <h2>Ошибка загрузки</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Попробовать снова</button>
-      </div>
+      <ErrorBasket />
     );
   }
 

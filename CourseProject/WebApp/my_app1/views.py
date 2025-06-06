@@ -3,6 +3,7 @@ import redis
 from .minio import add_pic
 from WebApp import settings
 from datetime import datetime
+from .forms import SendTextForm
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from .permissions import IsManager, IsAdmin
@@ -10,16 +11,13 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect
 from drf_yasg.utils import swagger_auto_schema
-from .forms import SendTextForm, AuthAndLoginForm
 from django.views.decorators.csrf import csrf_exempt
+from .models import CustomUser, Product, Application
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import permission_required
-from .models import CustomUser, NewUserManager, Product, Application, AuthUser
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from .serializers import CustomUserSerializer, ProductSerializer, ApplicationSerializer
 from rest_framework.decorators import permission_classes, authentication_classes, api_view
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
 session_storage = redis.StrictRedis(host=settings.REDIS_HOST,
@@ -72,8 +70,9 @@ class ApplicationList(APIView):
     def get(self, request, format=None):
         pk = request.GET.get('pk')
         user = get_object_or_404(CustomUser, pk=pk)
-        applications = [self.model_class.objects.filter(pk=elem).all()
-                        for elem in user.list_application]
+        applications = self.model_class.objects.filter(
+            pk__in=user.list_application, deleted_at=None
+            ).order_by("pk")
         serializer = self.serializer_class(applications, many=True)
         return Response(serializer.data)
     
@@ -89,7 +88,16 @@ class ApplicationList(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @swagger_auto_schema(request_body=ApplicationSerializer)
+
+class ApplicationDetail(APIView):
+    model_class = Application
+    serializer_class = ApplicationSerializer
+
+    def get(self, request, pk, format=None):
+        application = get_object_or_404(Application, pk=pk)
+        serializer = self.serializer_class(application)
+        return Response(serializer.data)
+    
     def put(self, request, pk, format=None):
         application = get_object_or_404(self.model_class, pk=pk)
         serializer = self.serializer_class(application, data=request.data, partial=True)
@@ -97,13 +105,19 @@ class ApplicationList(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, format=None):
+        application = get_object_or_404(Application, pk=pk)
+        application.deleted_at = datetime.now()
+        application.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ProductList(APIView):
     model_class = Product
     serializer_class = ProductSerializer
     authentication_classes = []
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, requset, format=None):
         products = self.model_class.objects.filter(deleted_at=None)
@@ -156,6 +170,22 @@ class ProductDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk, format=None):
+        product = get_object_or_404(self.model_class, pk=pk)
+        product.deleted_at = None
+        product.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class AdminPanelProducts(APIView):
+    model_class = Product
+    serializer_class = ProductSerializer
+
+    def get(self, request, format=None):
+        products = self.model_class.objects.all()
+        serializer = self.serializer_class(products, many=True)
+        return Response(serializer.data)
 
 
 class UsersList(APIView):
@@ -163,9 +193,33 @@ class UsersList(APIView):
     serializers_class = CustomUserSerializer
 
     def get(self, request, format=None):
-        user = self.model_class.objects.all()
-        serializer = self.serializers_class(user, many=True)
+        users = self.model_class.objects.order_by("pk")
+        serializer = self.serializers_class(users, many=True)
         return Response(serializer.data)
+
+
+class UserDetail(APIView):
+    model_class = CustomUser
+    serializer_class = CustomUserSerializer
+
+    def get(self, request, pk, format=None):
+        user = get_object_or_404(self.model_class, pk=pk)
+        serializer = self.serializer_class(user)
+        return Response(serializer.data)
+    
+    def delete(self, request, pk, format=None):
+        user = get_object_or_404(self.model_class, pk=pk)
+        user.deleted_at = datetime.now()
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def patch(self, request, pk, format=None):
+        user = get_object_or_404(self.model_class, pk=pk)
+        serializer = self.serializer_class(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -185,17 +239,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         if self.model_class.objects.filter(email=request.data['email']).exists():
-            return Response({"status": "Exist"}, status=400)
+            return Response({"status": "Exist"}, status=status.HTTP_409_CONFLICT)
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             self.model_class.objects.create_user(email=serializer.data['email'],
                                                  password=serializer.data['password'],
-                                                 is_superuser=serializer.data['is_superuser'],
-                                                 is_staff=serializer.data['is_staff'])
+                                                 is_superuser=serializer.data['is_superuser'])
             return Response({"status": "Success",
                              "data": {
                                  "email": serializer.data['email']
-                             }}, status=200)
+                             }}, status=status.HTTP_201_CREATED)
         return Response({"status": "Error", "error": serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -210,12 +263,18 @@ def login_view(request):
     password = request.data.get("password", None)
     user = authenticate(request=request, username=email, password=password)
     if user is not None:
-        pk = CustomUser.objects.filter(email=email).values('id')
-        login(request, user)
-        random_key = str(uuid.uuid4())
-        session_storage.set(random_key, email)
-        return Response({"status": 'Success',
-                         "pk": pk}, status=200)
+        user_deleted = CustomUser.objects.filter(email=email).values('deleted_at')
+        if user_deleted[0].get('deleted_at') != None:
+            return HttpResponse("{'status': 'error', 'error': 'login failed'}")
+        else:
+            pk = CustomUser.objects.filter(email=email).values('id')
+            is_superuser = CustomUser.objects.filter(email=email).values('is_superuser')
+            login(request, user)
+            random_key = str(uuid.uuid4())
+            session_storage.set(random_key, email)
+            return Response({"status": 'Success',
+                            "pk": pk,
+                            "is_superuser": is_superuser}, status=200)
     else:
         return HttpResponse("{'status': 'error', 'error': 'login failed'}")
 

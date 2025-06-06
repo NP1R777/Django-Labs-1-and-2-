@@ -21,6 +21,7 @@ const Header = ({ onSortAsc, onSortDesc }) => {
         </div>
         <nav>
           <ul>
+            <li><a href="/admin-panel/">Админ-панель</a></li>
             <li><a href="/">Товары</a></li>
             <li><a href="/basket/">Корзина</a></li>
             {isLogin === null && (
@@ -30,22 +31,13 @@ const Header = ({ onSortAsc, onSortDesc }) => {
               </>
             )}
             {isLogin && (
-              <li>
-                <button onClick={() => {
-                  localStorage.clear();
-                  setIsLogin(null);
-                }}>
-                  Выйти
-                </button>
-              </li>
+              <>
+                <li><a href="/profile/">Личный кабинет</a></li>
+              </>
             )}
           </ul>
         </nav>
       </div>
-      {/* <div id="sortButtons">
-        <button id="btn1" onClick={onSortAsc}>Сортировка по возрастанию</button>
-        <button id="btn2" onClick={onSortDesc}>Сортировка по убыванию</button>
-      </div> */}
     </header>
   );
 };

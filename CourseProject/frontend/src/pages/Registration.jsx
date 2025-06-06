@@ -23,7 +23,7 @@ const Registration = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8001/user/user/', {
+      const response = await axios.post('http://localhost:8002/user/user/', {
         email: email,
         password: password
       });
@@ -36,7 +36,6 @@ const Registration = () => {
         navigate('/login/'); // Перенаправление на страницу авторизации
       }
     } catch (error) {
-      console.error('Ошибка при регистрации:', error);
       setError('Произошла ошибка при регистрации. Пожалуйста, попробуйте снова.');
     }
   };

@@ -1,7 +1,6 @@
 from django.db import models
 from datetime import timezone
 from django.contrib import admin
-from django_redis import get_redis_connection
 from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
 
 
@@ -69,35 +68,30 @@ class Product(models.Model):
     created_at = models.DateField(auto_now_add=True, null=False)
     updated_at = models.DateField(auto_now_add=True, null=True)
     deleted_at = models.DateField(null=True, blank=True)
-    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
-    # redis_connection = get_redis_connection()
-
-    # def save(self, *args, **kwargs):
-    #     self.redis_connection.set(self.name, self.quantity)
+    id_category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     def delete(self, *args, **kwargs):
         self.deleted_at = timezone.now()
         self.save()
     
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 
 class Application(models.Model):
     class Meta:
         db_table = 'application'
     
-    created_at = models.DateField(auto_now_add=True, null=False)
-    updated_at = models.DateField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
     deleted_at = models.DateField(auto_now_add=False, null=True)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False, null=True)
     is_progress = models.BooleanField(default=False)
     is_close = models.BooleanField(default=False)
     is_draft = models.BooleanField(default=False)
     is_reject = models.BooleanField(default=False)
     id_product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
-    quantity_product = models.IntegerField(default=1, null=False)
+    quantity_product = models.IntegerField(null=False)
 
 
 class NewUserManager(UserManager):
@@ -115,9 +109,10 @@ class NewUserManager(UserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(("email адрес"), unique=True)
-    username = models.CharField(max_length=50, null=True)
     password = models.CharField(max_length=500, verbose_name="Пароль")
-    is_staff = models.BooleanField(default=False, verbose_name="Является ли пользователь менеджером?")
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    deleted_at = models.DateField(auto_now_add=False, null=True)
     is_superuser = models.BooleanField(default=False, verbose_name="Является ли пользователь админом?")
     list_application = models.JSONField(default=list)
     
